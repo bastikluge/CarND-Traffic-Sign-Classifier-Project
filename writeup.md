@@ -83,7 +83,8 @@ To train the model, I used an ....
 
 ####4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
-1st shot
+**1st shot (as is)**
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 RGB image   							| 
@@ -99,27 +100,11 @@ To train the model, I used an ....
 | Fully connected		| outputs 84  									|
 | RELU					|												|
 | Fully connected		| outputs 43  									|
+
 After 20 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 75%-79%
 
-2nd shot
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x1 grayscale image						| 
-| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
-| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
-| Flattening			| outputs 400									|
-| Fully connected		| outputs 120  									|
-| RELU					|												|
-| Fully connected		| outputs 84  									|
-| RELU					|												|
-| Fully connected		| outputs 43  									|
-After 50 epochs with batch size 128 and learning rate 0.001: training accuracy 10%, validation accuracy 5%
+**2nd shot (increase feature set of convolution layers a bit)**
 
-3rd shot
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 RGB image   							| 
@@ -135,9 +120,11 @@ After 50 epochs with batch size 128 and learning rate 0.001: training accuracy 1
 | Fully connected		| outputs 100  									|
 | RELU					|												|
 | Fully connected		| outputs 43  									|
+
 After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 77%-79%
 
-4th shot
+**3rd shot (increase feature set of convolution layers some more)**
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 RGB image   							| 
@@ -153,9 +140,11 @@ After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 | Fully connected		| outputs 100  									|
 | RELU					|												|
 | Fully connected		| outputs 43  									|
+
 After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 77%-79%
 
-5th shot
+**4th shot (add dropout to convolution layers)**
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 RGB image   							| 
@@ -173,9 +162,11 @@ After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 | Fully connected		| outputs 100  									|
 | RELU					|												|
 | Fully connected		| outputs 43  									|
+
 After 35 epochs with batch size 128 and learning rate 0.001: training accuracy 85-87%, validation accuracy 66%-69%
 
-6th shot
+**5th shot (add dropout to fully connected layers)**
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 RGB image   							| 
@@ -193,9 +184,11 @@ After 35 epochs with batch size 128 and learning rate 0.001: training accuracy 8
 | RELU					|												|
 | Dropout		      	| 												|
 | Fully connected		| outputs 43  									|
+
 After 30 epochs with batch size 128 and learning rate 0.001: training accuracy 93-95%, validation accuracy 75-77%
 
-7st shot
+**6th shot (go back to initial and transform to YUV)**
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 YUV image   							| 
@@ -211,9 +204,31 @@ After 30 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 | Fully connected		| outputs 84  									|
 | RELU					|												|
 | Fully connected		| outputs 43  									|
+
 After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 85%-88%
 
-8th shot
+**7th shot (YUV with min-max normalization)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x3 YUV image   							| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 89%-90%
+
+**8th shot (YUV + dropout in fully connected layers)**
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 YUV image   							| 
@@ -231,9 +246,11 @@ After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 | RELU					|												|
 | Dropout		      	| 												|
 | Fully connected		| outputs 43  									|
-After 30 epochs with batch size 128 and learning rate 0.001: training accuracy 75%, validation accuracy 65% (@todo: measure again)
 
-9th shot
+After 30 epochs with batch size 128 and learning rate 0.001: training accuracy 94%, validation accuracy 88%.
+
+**9th shot (Y grayscale)**
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x1 grayscale (Y of YUV image)			| 
@@ -249,9 +266,11 @@ After 30 epochs with batch size 128 and learning rate 0.001: training accuracy 7
 | Fully connected		| outputs 84  									|
 | RELU					|												|
 | Fully connected		| outputs 43  									|
-After 20 epochs with batch size 128 and learning rate 0.001: training accuracy 94%, validation accuracy 50%.
 
-10th shot
+After 13 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 91%.
+
+**10th shot (Y grayscale with min-max normalization)**
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x1 grayscale (Y of YUV image) min-max-normalized	| 
@@ -267,7 +286,89 @@ After 20 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 | Fully connected		| outputs 84  									|
 | RELU					|												|
 | Fully connected		| outputs 43  									|
-After 25 epochs with batch size 128 and learning rate 0.001: training accuracy 93%, validation accuracy 44%.
+
+After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 89%.
+
+**11th shot (Y grayscale with dropout)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Dropout		      	| 												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Dropout		      	| 												|
+| Fully connected		| outputs 43  									|
+
+After 25 epochs with batch size 128 and learning rate 0.001: training accuracy 95%, validation accuracy 89%.
+
+**12th shot (Y grayscale)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 42 epochs with batch size 1024 and learning rate 0.001: training accuracy 99%, validation accuracy 89%.
+
+**13th shot (Y grayscale)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After ?? epochs with batch size 512 and learning rate 0.001: training accuracy ??%, validation accuracy ??%.
+
+Next steps:
+- test with smaller learning rates
+- test with 3 convolution layers 4x4->2x2->5x5
+- implement augmentation
+
+=> Analyzed error distribution: Classes with few occurances in test set couldn't be matched well on the validation set (over-fitting to test set). Should use data augmentation.
+YUV: Speed limit 20km/h could only be matched in less than 30% of the cases (mostly matched to speed limit 30km/h) because of low occurance in training set. Other speed limits (30km/h, 60km/h) were also matched to wrong speed categories. "End of speed limit" was matched in 100% of the cases despite of the low frequency of this class in the training set, most likely due to its unique color scheme. Surprisingly "no passing" was also matched to speed limits. Other signs with bad matching quality were "General caution", "Dangerous curve to the left", "Dangerous curve to the right", "Double curve", "Roundabout mandatory", which were all erroneously matched to several other signs with same shape and color. It could be that for this sign the color matching was given a bigger weight than the matching of the inner shape. Analysis of the error distribution for a grayscale classifier will shed more light on this. Other examples with bad matching rate were the ones with little frequency in the training set: "Turn left ahead, "Roundabout mandatory", "End of no passing", "End of no passing by vehicles over 3.5 metric tons".
+2 main problems for YUV images: 
+(1) Color is weighted more important than shape in some cases.
+(2) Some classes have little occurance in training set.
+Both problems relate to overfitting of the neural net to the training data.
+Y-grayscale: Speed limit 20km/h could be matched in 60% of the cases (mostly matched to speed limit 70km/h) because of low occurance in training set. The same bad matching result was observed for "Turn left ahead, "Roundabout mandatory", "End of no passing". Other speed limits (30km/h, 60km/h, 120km/h) were also matched to wrong speed categories. "End of no passing by vehicles over 3.5 metric tons". "End of speed limit" was not matched as well as when using color, as the unique coloring of the sign is not available any more. Other signs with bad matching quality were "General caution", "Dangerous curve to the left", "Dangerous curve to the right", "Double curve", "Roundabout mandatory", which were all erroneously matched to several other signs with same shape and color. So the grayscale transformation didn't really help to analyze this.
+
+=> The inner part of signs is badly recognized despite of YUV or grayscale encoding. Might need smaller convolution kernel.
+
+=> Oscillation in the end of the convergence: might need lower learning rate and/or bigger batch size
+
+=> Observation: Dropout leads to more iterations until convergence.
 
 **@todo**
 
