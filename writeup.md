@@ -54,34 +54,64 @@ I started off my implementation with the LeNet architecture as proposed in the l
 
 #### Preprocessing of the data
 
-The only preprocessing I applied was a normalization of the RGB values according to _pixel = (pixel - 128) / 128_. I used this normalization to ensure that the model is fed with well-conditioned data. Conversion to grayscale didn't seem favorable to me as (at least in human perception) the colors of the traffic sign already give a good indication of both the appearance and type of a traffic sign (signal color red is often used for the shape of warning signs, whearas blue or yellow signs indicate other types of sign). In fact, when testing the effect of grayscaling the input, I found that the model accuracy decreased significantly both on training set and on validation set (validation set below 5% with the setup described in the beginning of this section).
+After analyzing the error distributions on the validation sets of my first trained network, I observed that especially those classes were badly matched, for which the training set contained few (less than 500) examples. So as a first preprocessing step I implemented an augmentation of the training set, such that for each class there will be at least 1500 values. The techniques I used for augmentation were rotating, scaling, bulging, moving and shearing the images.
 
-####2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
+Although it didn't seem favorable to me at first glance (because in my human perception I rely on the coloring of traffic signs during their classification), I observed that a grayscale transformation of the input images lead to a significantly better matching rate than without (91% on grayscale images with initial net architecture as opposed to 75% on color images). Most likely, an overfitting of the color schemes of the training images made up a significant part of the overfitting observed in the first training run of the neural network. So my second preprocessing step was a grayscale transformation (Y value of YUV encoding of image) of the input images.
 
-**@todo**
+The third preprocessing step I applied was a normalization of the grayscale values according to _pixel = (pixel - 128) / 128_. I used this normalization to ensure that the model is fed with well-conditioned data. I tried also a different normalization technique (normalize on minimum and maximum value to ensure the value range is [-1.0, 1.0]), but the simple approach worked better in my experiments.
 
-My final model consisted of the following layers:
+#### Final model architecture
+
+My final model consisted of the 3 convolutional and 3 fully connected layers as shown in below table:
 
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 4x4     	| 1x1 stride, valid padding, outputs 29x29x12 	|
 | RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
+| Dropout		      	| 												|
+| Convolution 2x2	    | 1x1 stride, valid padding, outputs 28x28x18	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x18					|
+| Convolution 4x4	    | 2x2 stride, valid padding, outputs 6x6x25		|
+| RELU					|												|
+| Dropout		      	| 												|
+| Flattening			| outputs 900									|
+| Fully connected		| outputs 300  									|
+| RELU					|												|
+| Fully connected		| outputs 150  									|
+| RELU					|												|
+| Dropout		      	| 												|
+| Fully connected		| outputs 43  									|
  
+The first convolutional layer applies a 4x4 kernel size using a stride size of 1x1 and outputs 12 feature dimensions, resulting in an output size of 29x29x12. Its architecture is completed by a RELU-activation and a dropout node. The second convolutional layer applies a 2x2 kernel size using a stride size of 1x1 and outputs 18 feature dimensions, resulting in an output size of 28x28x18. Its architecture is completed by a RELU-activation node and a max-pooling node with kernel size 2x2 and stride size of 2x2. The third convolutional layer applies a 4x4 kernel size using a stride size of 2x2 and outputs 25 feature dimensions, resulting in an output size of 6x6x25. Its architecture is completed by a RELU-activation and a dropout node. Note that a muliplication of the kernel sizes of the convolutional nodes results in the size of the traffic sign images.
 
+The output of the convoluational layers is flattened to serve as input of size 900 to the first fully connected layer, which has an output size of 300. The architecture of the first fully connected layer is completed by a RELU activation. The second fully connected layer transforms the input to 150 output dimensions, activates it with RELU and applies a dropout node to avoid overfitting. The third fully connected layer, which is the last layer of the neural network, transforms the input to the 43 output dimension, where each output dimension is associated with one type of traffic sign.
 
-####3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
+For all layers, I initialized all weight matrices with a gaussian distribution with mean 0.0 and standard deviation 0.1. All offset vectors were initialized with 0.0.
 
-To train the model, I used an ....
+#### Training method
+
+To train the model, I minimized the reduced mean of the softmax cross entropy. As optimization method I chose the AdamOptimizer, a slightly refined gradient descent method, which was proposed in the lecture. One training epoch consisted of shuffling the training data, dividing it into batches and running the optimization method on each batch.
+
+In my final solution, I used 30 epochs, a batch size of 128, a learning rate of 0.001 and a dropout probability of 0.5.
+
+#### Iterative improvement of classification pipeline
+
+After I had implemented a running prototype (with the LeNet architecture as described in the introduction of this section), I made a series of modifications to both preprocessing steps, training parameters and network configuration. For each modification I executed a test run and protocolled after how many epochs the network weights converged, and to which accuracies on training and validation set the model converged. I also wrote a textual output of the error distribution on the validation set, which provides the information to which other traffic signs each traffic sign was erroneously mapped. Based on these results and a visual inspection of the traffic signs, I defined measures to improve my implementation. In the next paragraphs, I will discuss the different results and measures in more detail.
+
+In my first round of analysis, I worked with the original RGB version of the images, because I assumed the colors to be helpful for the classification process. Because the LeNet architecture had been defined for grayscale images (with one color channel), and the RGB images have 3 color channels, I suspected that the number of feature dimensions of the network architecture might be too low. Regardless of whether I increased it slightly (first layer from 6 to 10, second layer from 16 to 20) or a little more (first layer from 6 to 12, second layer from 16 to 24), I observed a model convergence after 15 epochs (as opposed to 15 with LeNet) to an accuracy of 77%-79% on the validation set (as opposed to 75% with LeNet).
+
+In my second round of analysis, I added dropout nodes at different layers of the LeNet network in order to tackle the overfitting I had observed with the original LeNet architecture (accuracy on training set had converged to 99%, whereas accuracy on validation set got stuck around 75%). **@todo: Test again because there was a bug!**
+
+As a next step, I tested the effect of transformation of the RGB image to YUV color space and to grayscale (motivated by the 2011 publication "Traffic Sign Recognition with Multi-Scale Convolutional Networks" by P. Sermanet and Y. LeCun) using the LeNet architecture. In contrast to my initial expectation, I observed that a grayscale transformation of the input images lead to a significantly better matching rate than without (91%-93% on grayscale images as opposed to 75% on RGB images). Most likely, an overfitting of the color schemes of the training images made up a significant part of the overfitting observed in the first training run of the neural network. Interestingly also the YUV encoding of the images had a significantly positive effect on the accuracy on the validation set (85%-88% on YUV images as opposed to 75% on RGB images). The extent of the improvement is surprising as the RGB->YUV transformation is a linear operation and therefore has the same structure as a linear node of a neural network. So the transformation can be interpreted as an additional network layer. I also observed that, similar as for RGB images, the training procedure converged after 15 epochs.
+
+In another round of analysis, I tested whether a different normalization scheme would have a positive effect on the prediction accuracy of the neural network. I compared the simple normalization _pixel = (pixel - 128) / 128_ with the slightly more sophisticated normalization _pixel = (pixel - min(pixels)) / (max(pixels) - min(pixels)) - 0.5', which scales each image channel to the interval [-0.5, 0.5]. I measured this to have a slightly positive effect on the YUV image (approximately 1%) and a slightly negative effect on the grayscale image (approximately -1%). The convergence rate remained unchanged in both cases.
+
+As this configuration had resulted in the best prediction accuracy on the previous experiments, I continued my experiments on grayscale images with simple normalization using the LeNet network architecture. Because of the oscillation of the prediction accuracy, which I had observed in the training epochs after convergence, I next decided to modify both batch size and learning rate. I observed that increasing the batch size to 512 and 1024 resulted in later convergence (after 20 and 42 epochs, respectively) and lower prediction accuracy (90% and 89%, respectively). Also a variation of the learning rate didn't pay of in my experiments: When increasing the learning rate (to 0.002 and 0.005) I observed greater oscillations of the prediction accuracy after convergence, and when decreasing the learning rate (to 0.0005 and 0.0002) I observed a slight degradation in prediction accuracy (90% and 89%, respectively). As expected the required number of epochs until convergence slightly decreased when increasing the learning rate (approximately 10 epochs) and significantly increased when decreasing the learning rate (approximately 25 and 40 epochs, respectively).
+
+As none of the above experiments had resulted in a classification pipeline near to the required accuracy, I next took a closer look at the images and at the error distributions observed in the grayscale image and LeNet setup.
 **@todo**
-
-####4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
 **1st shot (as is)**
 
@@ -471,9 +501,76 @@ After 10 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 
 After 5 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 92%-94%.
 
+**20th shot (Y grayscale with additional convolution layer)**
 
-Next steps:
-- test with 3 convolution layers 4x4->2x2->5x5
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 4x4     	| 1x1 stride, valid padding, outputs 29x29x12 	|
+| RELU					|												|
+| Dropout		      	| 												|
+| Convolution 2x2	    | 1x1 stride, valid padding, outputs 28x28x18	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x18					|
+| Convolution 4x4	    | 2x2 stride, valid padding, outputs 6x6x25		|
+| RELU					|												|
+| Dropout		      	| 												|
+| Flattening			| outputs 900									|
+| Fully connected		| outputs 300  									|
+| RELU					|												|
+| Fully connected		| outputs 150  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 10 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 94%.
+
+**21th shot (Y grayscale with additional convolution layer and additional dropout layer)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 4x4     	| 1x1 stride, valid padding, outputs 29x29x12 	|
+| RELU					|												|
+| Dropout		      	| 												|
+| Convolution 2x2	    | 1x1 stride, valid padding, outputs 28x28x18	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x18					|
+| Convolution 4x4	    | 2x2 stride, valid padding, outputs 6x6x25		|
+| RELU					|												|
+| Dropout		      	| 												|
+| Flattening			| outputs 900									|
+| Fully connected		| outputs 300  									|
+| RELU					|												|
+| Fully connected		| outputs 150  									|
+| RELU					|												|
+| Dropout		      	| 												|
+| Fully connected		| outputs 43  									|
+
+After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 96%.
+
+**22th shot (Y grayscale with additional convolution layer, additional dropout layer and augmented data)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 4x4     	| 1x1 stride, valid padding, outputs 29x29x12 	|
+| RELU					|												|
+| Dropout		      	| 												|
+| Convolution 2x2	    | 1x1 stride, valid padding, outputs 28x28x18	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x18					|
+| Convolution 4x4	    | 2x2 stride, valid padding, outputs 6x6x25		|
+| RELU					|												|
+| Dropout		      	| 												|
+| Flattening			| outputs 900									|
+| Fully connected		| outputs 300  									|
+| RELU					|												|
+| Fully connected		| outputs 150  									|
+| RELU					|												|
+| Dropout		      	| 												|
+| Fully connected		| outputs 43  									|
+
+After 8 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 96%-97%.
 
 => Analyzed error distribution: Classes with few occurances in test set couldn't be matched well on the validation set (over-fitting to test set). Should use data augmentation.
 YUV: Speed limit 20km/h could only be matched in less than 30% of the cases (mostly matched to speed limit 30km/h) because of low occurance in training set. Other speed limits (30km/h, 60km/h) were also matched to wrong speed categories. "End of speed limit" was matched in 100% of the cases despite of the low frequency of this class in the training set, most likely due to its unique color scheme. Surprisingly "no passing" was also matched to speed limits. Other signs with bad matching quality were "General caution", "Dangerous curve to the left", "Dangerous curve to the right", "Double curve", "Roundabout mandatory", which were all erroneously matched to several other signs with same shape and color. It could be that for this sign the color matching was given a bigger weight than the matching of the inner shape. Analysis of the error distribution for a grayscale classifier will shed more light on this. Other examples with bad matching rate were the ones with little frequency in the training set: "Turn left ahead, "Roundabout mandatory", "End of no passing", "End of no passing by vehicles over 3.5 metric tons".
