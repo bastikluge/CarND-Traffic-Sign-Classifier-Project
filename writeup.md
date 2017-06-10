@@ -267,7 +267,7 @@ After 30 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 | RELU					|												|
 | Fully connected		| outputs 43  									|
 
-After 13 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 91%.
+After 13 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 91%-93%.
 
 **10th shot (Y grayscale with min-max normalization)**
 
@@ -311,7 +311,27 @@ After 15 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 
 After 25 epochs with batch size 128 and learning rate 0.001: training accuracy 95%, validation accuracy 89%.
 
-**12th shot (Y grayscale)**
+**12th shot (Y grayscale with very big batch size)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 20 epochs with batch size 512 and learning rate 0.001: training accuracy 99%, validation accuracy 90%.
+
+**13th shot (Y grayscale with very big batch size)**
 
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
@@ -331,7 +351,7 @@ After 25 epochs with batch size 128 and learning rate 0.001: training accuracy 9
 
 After 42 epochs with batch size 1024 and learning rate 0.001: training accuracy 99%, validation accuracy 89%.
 
-**13th shot (Y grayscale)**
+**14th shot (Y grayscale with bigger learning rate)**
 
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
@@ -349,12 +369,111 @@ After 42 epochs with batch size 1024 and learning rate 0.001: training accuracy 
 | RELU					|												|
 | Fully connected		| outputs 43  									|
 
-After ?? epochs with batch size 512 and learning rate 0.001: training accuracy ??%, validation accuracy ??%.
+After 10 epochs with batch size 128 and learning rate 0.002: training accuracy 99%, validation accuracy 90%-93%.
+
+**15th shot (Y grayscale with big learning rate)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 15 epochs with batch size 128 and learning rate 0.005: training accuracy 99%, validation accuracy 91%-95%.
+
+**16th shot (Y grayscale with smaller learning rate)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 25 epochs with batch size 128 and learning rate 0.0005: training accuracy 99%, validation accuracy 89%-90%.
+
+**17th shot (Y grayscale with small learning rate)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 40 epochs with batch size 128 and learning rate 0.0002: training accuracy 99%, validation accuracy 88%.
+
+**18th shot (Y grayscale with augmented data)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 400									|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 84  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 10 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 95%.
+
+**19th shot (Y grayscale with increased depth of convolution layers)**
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale (Y of YUV image)			| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x12 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x12					|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x32	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16					|
+| Flattening			| outputs 800									|
+| Fully connected		| outputs 200  									|
+| RELU					|												|
+| Fully connected		| outputs 120  									|
+| RELU					|												|
+| Fully connected		| outputs 43  									|
+
+After 5 epochs with batch size 128 and learning rate 0.001: training accuracy 99%, validation accuracy 92%-94%.
+
 
 Next steps:
-- test with smaller learning rates
 - test with 3 convolution layers 4x4->2x2->5x5
-- implement augmentation
 
 => Analyzed error distribution: Classes with few occurances in test set couldn't be matched well on the validation set (over-fitting to test set). Should use data augmentation.
 YUV: Speed limit 20km/h could only be matched in less than 30% of the cases (mostly matched to speed limit 30km/h) because of low occurance in training set. Other speed limits (30km/h, 60km/h) were also matched to wrong speed categories. "End of speed limit" was matched in 100% of the cases despite of the low frequency of this class in the training set, most likely due to its unique color scheme. Surprisingly "no passing" was also matched to speed limits. Other signs with bad matching quality were "General caution", "Dangerous curve to the left", "Dangerous curve to the right", "Double curve", "Roundabout mandatory", which were all erroneously matched to several other signs with same shape and color. It could be that for this sign the color matching was given a bigger weight than the matching of the inner shape. Analysis of the error distribution for a grayscale classifier will shed more light on this. Other examples with bad matching rate were the ones with little frequency in the training set: "Turn left ahead, "Roundabout mandatory", "End of no passing", "End of no passing by vehicles over 3.5 metric tons".
